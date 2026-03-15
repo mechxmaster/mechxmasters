@@ -97,18 +97,15 @@ user-select:none;
 <input type="text" id="name" placeholder="Full Name" required>
 
 <input type="email" id="email" placeholder="Email" required>
-
-<input type="text" id="model" placeholder="BMW Model" required>
-
+<input type="text" id="model" placeholder="Car Model/ Topic" required>
 <textarea id="message" rows="4" placeholder="Your Message" required></textarea>
 
 <button type="submit">Submit</button>
 
+
 </form>
 
-<button class="download-btn" id="downloadAll">
-Download Word File
-</button>
+
 
 </div>
 
@@ -121,10 +118,13 @@ LOAD SAVED DATA
 
 let responses = JSON.parse(localStorage.getItem("mxmResponses")) || [];
 
-
+const scriptURL = "https://script.google.com/macros/s/AKfycbwQ-kTsLNJbiAGWC5xUuzt9sBimzhSFiSq93ijJH0Ut9iRH-C-6Ef4XCswOstZh4NLi/exec";
 /* ==========================
 FORM SUBMIT
 ========================== */
+
+
+
 
 document.getElementById("contactForm").addEventListener("submit",function(e){
 
@@ -148,69 +148,30 @@ Message: ${message}
 
 responses.push(entry);
 
-/* SAVE TO DEVICE */
+/* SAVE LOCALLY */
 
 localStorage.setItem("mxmResponses", JSON.stringify(responses));
 
-alert("Response saved on this device!");
+
+/* SEND TO GOOGLE SHEETS */
+
+fetch(scriptURL,{
+method:"POST",
+body: JSON.stringify({
+name:name,
+email:email,
+model:model,
+message:message
+})
+});
+
+
+alert("Response submitted successfully!");
+
 
 document.getElementById("contactForm").reset();
 
-});
 
-
-/* ==========================
-DOWNLOAD WORD FILE
-========================== */
-
-document.getElementById("downloadAll").addEventListener("click",function(){
-
-let saved = JSON.parse(localStorage.getItem("mxmResponses")) || [];
-
-if(saved.length === 0){
-
-alert("No responses yet!");
-
-return;
-
-}
-
-let content = "<h1>MXM Contact Responses</h1>";
-
-saved.forEach(function(r){
-
-content += "<p>"+r.replace(/\n/g,"<br>")+"</p><hr>";
-
-});
-
-const blob = new Blob(
-['\ufeff',content],
-{type:"application/msword"}
-);
-
-const link = document.createElement("a");
-
-link.href = URL.createObjectURL(blob);
-
-link.download = "MXM_Responses.doc";
-
-link.click();
-
-});
-
-
-</script>
-
-
-<script>
-
-/* ==========================
-RIGHT CLICK BLOCK
-========================== */
-
-document.addEventListener('contextmenu',function(e){
-
-e.preventDefault();
 
 });
 
