@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MXM Contact Form</title>
+
+<style>
+
+/* ===== Body Styling ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a, #1c1c1c);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    min-height: 100vh;
+}
+
+/* ===== Container Styling ===== */
+.contact-container {
+    background: rgba(20, 20, 20, 0.95);
+    padding: 40px 30px;
+    border-radius: 15px;
+    width: 420px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+    border-top: 4px solid #00a2ff;
+}
+
+/* ===== Heading ===== */
+h2 {
+    color: #00a2ff;
+    margin-bottom: 25px;
+}
+
+/* ===== Inputs ===== */
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    background: #1a1a1a;
+    color: white;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border: 2px solid #00a2ff;
+}
+
+/* ===== Buttons ===== */
+button {
+    width: 60%;
+    margin: 20px auto;
+    display: block;
+    background: black;
+    color: white;
+    border: 2px solid #00a2ff;
+    padding: 12px;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #00a2ff;
+    color: black;
+}
+
+/* Download Button */
+.download-btn {
+    border-color: #00ffdd;
+}
+
+/* Disable Text Selection */
+body{
+user-select:none;
+-webkit-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="contact-container">
+
+<h2>Contact MXM</h2>
+
+<form id="contactForm">
+
+<input type="text" id="name" placeholder="Full Name" required>
+
+<input type="email" id="email" placeholder="Email" required>
+
+<input type="text" id="model" placeholder="BMW Model" required>
+
+<textarea id="message" rows="4" placeholder="Your Message" required></textarea>
+
+<button type="submit">Submit</button>
+
+</form>
+
+<button class="download-btn" id="downloadAll">
+Download Word File
+</button>
+
+</div>
+
+
+<script>
+
+/* ==========================
+LOAD SAVED DATA
+========================== */
+
+let responses = JSON.parse(localStorage.getItem("mxmResponses")) || [];
+
+
+/* ==========================
+FORM SUBMIT
+========================== */
+
+document.getElementById("contactForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const name = document.getElementById("name").value;
+
+const email = document.getElementById("email").value;
+
+const model = document.getElementById("model").value;
+
+const message = document.getElementById("message").value;
+
+const entry =
+`Date: ${new Date().toLocaleString()}
+Name: ${name}
+Email: ${email}
+BMW Model: ${model}
+Message: ${message}
+-------------------------------`;
+
+responses.push(entry);
+
+/* SAVE TO DEVICE */
+
+localStorage.setItem("mxmResponses", JSON.stringify(responses));
+
+alert("Response saved on this device!");
+
+document.getElementById("contactForm").reset();
+
+});
+
+
+/* ==========================
+DOWNLOAD WORD FILE
+========================== */
+
+document.getElementById("downloadAll").addEventListener("click",function(){
+
+let saved = JSON.parse(localStorage.getItem("mxmResponses")) || [];
+
+if(saved.length === 0){
+
+alert("No responses yet!");
+
+return;
+
+}
+
+let content = "<h1>MXM Contact Responses</h1>";
+
+saved.forEach(function(r){
+
+content += "<p>"+r.replace(/\n/g,"<br>")+"</p><hr>";
+
+});
+
+const blob = new Blob(
+['\ufeff',content],
+{type:"application/msword"}
+);
+
+const link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+
+link.download = "MXM_Responses.doc";
+
+link.click();
+
+});
+
+
+</script>
+
+
+<script>
+
+/* ==========================
+RIGHT CLICK BLOCK
+========================== */
+
+document.addEventListener('contextmenu',function(e){
+
+e.preventDefault();
+
+});
+
+
+/* ==========================
+KEY SHORTCUT BLOCK
+========================== */
+
+document.onkeydown=function(e){
+
+if(e.keyCode==123){return false;}
+
+if(e.ctrlKey && e.shiftKey && e.keyCode==73){return false;}
+
+if(e.ctrlKey && e.shiftKey && e.keyCode==74){return false;}
+
+if(e.ctrlKey && e.keyCode==85){return false;}
+
+if(e.ctrlKey && e.shiftKey && e.keyCode==67){return false;}
+
+};
+
+
+/* ==========================
+DEVTOOLS DETECTION
+========================== */
+
+setInterval(function(){
+
+const widthThreshold = window.outerWidth - window.innerWidth > 160;
+
+const heightThreshold = window.outerHeight - window.innerHeight > 160;
+
+if(widthThreshold || heightThreshold){
+
+document.body.innerHTML =
+"<h1 style='color:red;text-align:center;margin-top:200px'>Developer Tools Detected</h1>";
+
+}
+
+},1000);
+
+</script>
+
+</body>
+</html>
